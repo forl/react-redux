@@ -31,11 +31,27 @@ export default function connectAdvanced(
     props. Do not use connectAdvanced directly without memoizing results between calls to your
     selector, otherwise the Connect component will re-render on every state or props change.
   */
+  /*
+    selectorFactory 是一个函数，作用是生成 selector 函数，selector函数的作用是通过 state、props 和 dispatch
+    计算出新的 props。例如：
+      export default connectAdvanced((dispatch, options) => (state, props) => ({
+        thing: state.things[props.thingId],
+        saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
+      }))(YourComponent)
+
+    该工厂函数的签名是`(dispatch, options) => selector`，传入 dispatch，就可以让 selectorFactory 函数在
+    selector 函数外部绑定 actionCreators。connectAdvanced 的 optios 参数在添加了 displayName 和
+    WrappedComponent 字段之后，会被传给 selectorFactory 作为第二个参数。
+    
+    需要注意：selectorFactory 全权负责所有 props 进出的缓存和记忆。如果没有对 selector 返回结果进行缓存记忆，
+    就不要直接使用 connectAdvanced，否则 Connect 组件会在每一次 state 或者 props 变化时 re-render。
+  */
   selectorFactory,
   // options object:
   {
     // the func used to compute this HOC's displayName from the wrapped component's displayName.
     // probably overridden by wrapper functions such as connect()
+    // 该函数通过被包装组件的 displayName 计算此 HOC 的 displayName。可以被包装函数覆盖，比如 connect()。
     getDisplayName = name => `ConnectAdvanced(${name})`,
 
     // shown in error messages

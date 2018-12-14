@@ -20,6 +20,8 @@ import defaultSelectorFactory from './selectorFactory'
 
   The resulting final props selector is called by the Connect component instance whenever
   it receives new props or store state.
+
+  connect 是 connectAdvanced 之上的外观模式。
  */
 
 function match(arg, factories, name) {
@@ -101,4 +103,5 @@ export function createConnect({
   }
 }
 
+// default connect
 export default createConnect()
