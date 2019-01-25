@@ -136,6 +136,7 @@ export default function connectAdvanced(
 
   const Context = context
 
+  // 返回真正的 HOC
   return function wrapWithConnect(WrappedComponent) {
     if (process.env.NODE_ENV !== 'production') {
       invariant(
