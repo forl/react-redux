@@ -33,6 +33,8 @@ class Provider extends Component {
     }
   }
 
+  // 订阅store的变化，store 变化会触发调用 Provider 组件的 setState。
+  // 从而引起 Comsumer 组件re-render
   subscribe() {
     const { store } = this.props
 
@@ -61,6 +63,7 @@ class Provider extends Component {
   }
 
   render() {
+    // 可以传入自定义 context，否则使用默认的context，初始值为null
     const Context = this.props.context || ReactReduxContext
 
     return (

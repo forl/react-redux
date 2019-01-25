@@ -105,6 +105,7 @@ export default function connectAdvanced(
 
   const Context = context
 
+  // 返回真正的 HOC
   return function wrapWithConnect(WrappedComponent) {
     if (process.env.NODE_ENV !== 'production') {
       invariant(
@@ -149,6 +150,7 @@ export default function connectAdvanced(
       let lastStore
       let sourceSelector
 
+      // 选取 DerivedProps，并将其缓存以避免重复计算
       return function selectDerivedProps(state, props, store) {
         if (pure && lastProps === props && lastState === state) {
           return lastDerivedProps
@@ -179,6 +181,7 @@ export default function connectAdvanced(
     function makeChildElementSelector() {
       let lastChildProps, lastForwardRef, lastChildElement
 
+      // 创建一个子元素并将其缓存起来，下次在参数不变的情况下直接返回
       return function selectChildElement(childProps, forwardRef) {
         if (childProps !== lastChildProps || forwardRef !== lastForwardRef) {
           lastChildProps = childProps
@@ -192,6 +195,7 @@ export default function connectAdvanced(
       }
     }
 
+    // HOC返回的组件
     class Connect extends OuterBaseComponent {
       constructor(props) {
         super(props)
@@ -200,6 +204,8 @@ export default function connectAdvanced(
           'Passing redux store in props has been removed and does not do anything. ' +
             customStoreWarningMessage
         )
+
+        // 为每一个组件实例创建一套selector，可以缓存属性和子元素
         this.selectDerivedProps = makeDerivedPropsSelector()
         this.selectChildElement = makeChildElementSelector()
         this.renderWrappedComponent = this.renderWrappedComponent.bind(this)
@@ -223,18 +229,23 @@ export default function connectAdvanced(
           forwardedRef = this.props.forwardedRef
         }
 
+        // 获取 derivedProps
         let derivedProps = this.selectDerivedProps(
           storeState,
           wrapperProps,
           store
         )
 
+        // 返回子元素
         return this.selectChildElement(derivedProps, forwardedRef)
       }
 
       render() {
         const ContextToUse = this.props.context || Context
 
+        // 利用Context，context的value就是redux维护的全局状态
+        // Provider 组件订阅了 redux store，当 store 状态有变就会触发调用 Provider 组件实例的 setState
+        // 从而引起 re-render
         return (
           <ContextToUse.Consumer>
             {this.renderWrappedComponent}
